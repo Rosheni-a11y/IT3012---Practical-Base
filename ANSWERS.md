@@ -73,3 +73,41 @@ The `smells_toxin` sensor helps the agent know when it is on a toxic trap. By ge
 
 
 In the Vacuum World example, if the agent is rewarded every time it cleans dirt, it may make the area dirty again and clean it repeatedly just to get more rewards. This shows that a badly designed performance measure can make the agent behave in an unwanted way.
+
+# Practical 02
+
+## Step 1.2: The Simple Reflex Agent (Implementation & Failure)
+
+**3. Run the simulation. Observe: Watch the agent get trapped in a corner or a U-shaped wall, infinitely repeating a cycle (e.g., turn left, step forward, hit wall, turn left...).**
+
+### Step 1.2 Observation
+
+The Simple Reflex Agent did not collect all the food and the simulation stopped after reaching the 60-step limit with a score of 140. Since the agent only uses the current percept and does not keep any memory of previous states, it can repeat movements and cannot recognize that it has already followed the same path.
+
+
+## Step 1.3: The Model-Based Agent (Memory & State)
+
+### Step 1.3 Observation
+
+**5.Run the simulation. Observe: The agent should now remember where it has been, realize it is in a loop, and choose an alternate path to escape.**
+
+The Model-Based Agent was able to remember the cells it had already visited using its internal state. When it detected that it was about to repeat a previous path or reach a wall, it changed direction and chose another path. This helped it avoid getting stuck in the same loop as the Simple Reflex Agent.
+
+## Part 2: Theoretical Evaluation & Lecture Mapping
+
+**1. (Remember) According to Lecture 02, why is it impossible to program a mathematically perfect "Table-Driven Agent" for complex environments like Chess? What happens as the agent's lifetime increases?**
+
+A Table-Driven Agent is not practical for complex environments like Chess because it would need to store every possible percept sequence and the action for each one. As the agent's lifetime increases, the number of possible percept sequences also increases very quickly. This makes the table extremely large and difficult to store and use.
+
+**2. (Understand) Look at the code you wrote for your SimpleReflexAgent. Identify and explain the specific lines of code that represent the "Condition-Action Rules" discussed in the lecture.**
+
+The if statements in the SimpleReflexAgent represent the Condition-Action Rules. If food_here is true, the agent chooses Eat, and if wall_ahead is true, it chooses TurnLeft. Otherwise, it chooses MoveForward. The agent makes these decisions only using the current percept without remembering previous percepts.
+
+
+**3. (Analyze) Your SimpleReflexAgent likely got stuck in an infinite loop during Step 1.2. Based on the lecture, analyze exactly why this happened. How did the combination of "Partial Observability" and a lack of "Percept History" cause this failure?**
+
+The Simple Reflex Agent can get stuck because it only sees limited information such as wall_ahead and food_here. Since the environment is partially observable, it cannot see the full environment or know its exact position. It also does not keep a history of previous percepts or actions, so it cannot remember where it has already been. Because of this, it may repeat the same actions and get stuck in a loop.
+
+**4. (Evaluate) In Step 1.3, you added an internal state to your ModelBasedAgent. Evaluate how your specific code handles the "Transition Model" (how the world evolves) and the "Sensor Model" (how the agent's actions affect the world).**
+
+The Model-Based Agent uses last_action, relative_pos, and direction to update its internal state after each action. This acts as the Transition Model because the agent estimates how its position changes when it moves. The percepts such as wall_ahead and food_here give the agent information about the current environment. The agent combines this sensor information with its internal memory to decide the next action and avoid repeating the same path.
