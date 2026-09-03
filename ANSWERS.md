@@ -156,3 +156,70 @@ BFS uses a lot of memory because it stores all the nodes at the current level be
 DFS uses less memory because it mainly stores the nodes along the current path and some unexplored branches. Its space complexity is approximately O(bm), where m is the maximum depth.
 
 Therefore, on a very large grid, BFS is more likely to run out of memory, while DFS is more memory efficient but is not guaranteed to find the shortest path.
+
+
+# Practical 04 - A* Search
+
+## Step 1.1: Implementing the Heuristic Functions
+
+**5.Testing Checkpoint: Print the outputs of both functions for a mock start position (0, 0) and goal (3, 4) to verify that Manhattan returns 7 and Euclidean returns 5.0.**
+
+Manhattan Distance: 7  
+Euclidean Distance: 5.0
+
+## Step 1.3: Integrating A* into the Agent's Decision Loop
+
+**5. Open visual_grid_game.py and modify the GridGameGUI initialization to inject your SearchAgent() instead of the ModelBasedAgent(). Run the simulation and observe the optimized pathfinding!**
+
+A* collected all the food within 48 steps and achieved a final score of 255. 
+The agent used the Manhattan distance heuristic to guide the search toward the selected food and produced efficient paths within the 60-step limit.
+
+## Part 2: Theoretical Evaluation
+
+**1. (Understand) What is the key difference between how Uniform-Cost Search (UCS) and A* Search prioritize which node to explore next?**
+
+UCS selects the next node based only on the actual path cost from the start, which is g(n). It always explores the node with the lowest path cost first.
+
+A* uses both the actual path cost g(n) and the estimated cost to the goal h(n). It selects the node with the lowest f(n) = g(n) + h(n).
+
+Therefore, A* uses heuristic information to guide the search towards the goal, while UCS does not use any information about how close a node is to the goal.
+
+
+**2. (Analyze) In Step 1.1, you used Manhattan Distance. Why is Manhattan Distance considered an "admissible" heuristic for this specific 4-way movement grid, and what would happen to your A* algorithm if the heuristic was NOT admissible?**
+
+
+Manhattan Distance is admissible in our grid because the agent can only move in four directions: Up, Down, Left and Right. It calculates the minimum number of horizontal and vertical movements needed to reach the goal without overestimating the actual cost.
+
+An admissible heuristic never overestimates the real cost to reach the goal.
+
+If the heuristic is not admissible, it may overestimate the cost. In that case, A* is no longer guaranteed to find the optimal or shortest path.
+
+
+**3. (Evaluate) If we modified visual_grid_game.py to allow the agent to move diagonally (8-way movement), would Manhattan distance still be an admissible heuristic? Why or why not? Which metric should you switch to?**
+
+
+No. If diagonal movement is allowed at the same unit cost as horizontal/vertical movement, Manhattan Distance can overestimate the actual shortest path because the agent can reach the goal using fewer diagonal moves.
+
+For example, from:
+
+(0,0) → (3,3)
+
+Manhattan Distance gives:
+
+|3-0| + |3-0| = 6
+
+but with diagonal movement, the agent could reach (3,3) in only 3 diagonal moves.
+
+Therefore, Manhattan Distance would not be admissible in that setup. For an 8-way grid with unit-cost diagonal moves, Chebyshev Distance is a better heuristic.
+
+Small important point: if diagonal moves instead cost about √2, then Octile Distance is the standard choice.
+
+
+
+**4. (Create) When targeting multiple food items simultaneously, calculating the distance to just the single closest food item is a weak heuristic. Propose (in text) a stronger heuristic for navigating the grid to eat ALL remaining food efficiently.**
+
+A stronger heuristic could consider all the remaining food items instead of only the closest food.
+
+One approach is to calculate the distance from the agent to the closest food and also estimate the minimum distance needed to connect all the remaining food items, such as using a Minimum Spanning Tree (MST).
+
+This gives A* more information about the total work needed to collect all the food and can guide the agent to choose a more efficient overall route instead of repeatedly selecting only the nearest food.
